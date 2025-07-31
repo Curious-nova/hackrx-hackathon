@@ -151,12 +151,19 @@ llm = ChatGoogleGenerativeAI(
 pc = Pinecone(api_key=settings.pinecone_api_key)
 
 async def process_document_and_get_retriever(doc_url: str):
+    """
+    Asynchronously downloads, chunks, embeds, and indexes a document.
+    """
     try:
-        response = requests.get(doc_url)
-        response.raise_for_status()
-        with open(PDF_TEMP_PATH, "wb") as f:
-            f.write(response.content)
+        # Use httpx for async download
+        async with httpx.AsyncClient() as client:
+            response = await client.get(doc_url, follow_redirects=True)
+            response.raise_for_status()
+            with open(PDF_TEMP_PATH, "wb") as f:
+                f.write(response.content)
 
+        # The rest of the processing is CPU-bound, so it's okay to run it like this,
+        # but we run it inside an async function.
         loader = PyPDFLoader(PDF_TEMP_PATH)
         documents = loader.load()
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
@@ -166,7 +173,7 @@ async def process_document_and_get_retriever(doc_url: str):
         if index_name not in pc.list_indexes().names():
             pc.create_index(
                 name=index_name,
-                dimension=768,  # Dimension for Google's text-embedding-004
+                dimension=768,
                 metric='cosine',
                 spec=ServerlessSpec(cloud='aws', region='us-east-1')
             )

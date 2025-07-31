@@ -89,7 +89,8 @@ async def run_query_retrieval(
         if doc_url in retriever_cache:
             retriever = retriever_cache[doc_url]
         else:
-            retriever = process_document_and_get_retriever(doc_url)
+            # We must now 'await' this function call
+            retriever = await process_document_and_get_retriever(doc_url)
             if retriever is None:
                 raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to process document.")
             retriever_cache[doc_url] = retriever
