@@ -133,7 +133,8 @@ from langchain.schema.output_parser import StrOutputParser
 from pinecone import Pinecone
 from pinecone import ServerlessSpec
 from .config import settings
-
+import httpx
+import asyncio
 PDF_TEMP_PATH = "temp_policy.pdf"
 
 embedding_model = GoogleGenerativeAIEmbeddings(
@@ -149,7 +150,7 @@ llm = ChatGoogleGenerativeAI(
 
 pc = Pinecone(api_key=settings.pinecone_api_key)
 
-def process_document_and_get_retriever(doc_url: str):
+async def process_document_and_get_retriever(doc_url: str):
     try:
         response = requests.get(doc_url)
         response.raise_for_status()
