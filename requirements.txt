@@ -1,0 +1,26 @@
+# # requirements.txt
+
+# fastapi
+# uvicorn[standard]
+# pydantic
+# pydantic-settings
+# langchain
+# langchain-together
+# langchain_community
+# langchain-pinecone
+# pypdf
+# requests
+# pinecone # <-- THIS IS THE CORRECTED LINE
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+langchain
+langchain-google-genai
+langchain_community
+langchain-pinecone
+pypdf
+requests
+pinecone
+python-dotenv
+gunicorn
